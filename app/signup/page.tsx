@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import Link from "next/link"
-import { supabase } from "@/lib/supabaseClient" // ✅ Supabaseクライアントを読み込む
+import { supabase } from "@/lib/supabaseClient" 
 
 export default function SignupPage() {
   const [username, setUsername] = useState("")
