@@ -11,13 +11,13 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
 
   const handleSignup = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username }, // Supabaseユーザーに追加情報を持たせたいとき
-      },
-    })
+   const { error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+  data: { username },
+  },
+})
 
     if (error) {
       alert("登録失敗: " + error.message)
