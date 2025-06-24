@@ -29,7 +29,7 @@
 
 ## デプロイURL
 
-🔗 https://your-vercel-url.vercel.app/  
+ https://vercel.com/hirakisukes-projects/stock-manager
 ※一部の機能はログイン後に利用可能です。
 
 ## ログイン用テストアカウント（任意）
