@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+在庫管理アプリ - Stock Manager
 
-## Getting Started
 
-First, run the development server:
+## 概要
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+現場での在庫管理業務を効率化するために開発したWebアプリケーションです。  
+**Next.js 15 / TypeScript / Supabase / Tailwind CSS** を使用して構築しています。  
+未経験からフロントエンドエンジニアへの転職を目指し、実際の業務フローを意識して設計しました。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 主な機能
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- ✅ 在庫一覧表示（DataTableを使用）
+- ✅ 新規在庫の登録フォーム（バリデーションあり）
+- ✅ 編集・削除機能（モーダル対応）
+- ✅ チェック担当者による絞り込みフィルター
+- ✅ 削除済み在庫の履歴表示
+- ✅ Supabase認証機能（ログイン／ログアウト）
+- ✅ レスポンシブ対応済み
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 使用技術スタック
 
-## Learn More
+| 項目 | 使用技術 |
+|------|---------|
+| フロントエンド | Next.js 15, React, TypeScript |
+| スタイリング | Tailwind CSS |
+| バックエンド | Supabase（認証・DB） |
+| UIコンポーネント | Shadcn UI（DataTableなど） |
+| その他 | Vercelデプロイ, GitHub管理 |
 
-To learn more about Next.js, take a look at the following resources:
+## デプロイURL
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🔗 https://your-vercel-url.vercel.app/  
+※一部の機能はログイン後に利用可能です。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ログイン用テストアカウント（任意）
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
