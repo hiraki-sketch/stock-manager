@@ -1,7 +1,7 @@
-"use client"
+'use client'
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { supabase } from "@/lib/supabaseClient"
+import { createClient } from "@/lib/supabaseClient"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 function NewItemForm() {
   const router = useRouter()
   const params = useSearchParams()
+  const supabase = createClient()
 
   const [name, setName] = useState("")
   const [stock, setStock] = useState("")
@@ -27,30 +28,38 @@ function NewItemForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // ─── STEP0: 認証中ユーザー取得＆IDをログ ───
     const {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser()
+    console.log("▶ INSERT前 user.id:", user?.id, " userError:", userError)
 
     if (!user || userError) {
       alert("ユーザー情報の取得に失敗しました: " + (userError?.message || "不明なエラー"))
       return
     }
 
-    const { error } = await supabase.from("items").insert({
-      name,
-      stock: Number(stock),
-      unit,
-      checker: checkedBy,
-      user_id: user.id,
-    })
+    // ─── STEP1: INSERT実行 ───
+    const { data: inserted, error: insertError } = await supabase
+      .from("items")
+      .insert({
+        name,
+        stock: Number(stock),
+        unit,
+        checker: checkedBy,
+        user_id: user.id,      // ← ここに正しい user.id が入っているか
+      })
+      .select()               // 挿入後の行を返してもらう
+    console.log("▶ INSERT後 inserted:", inserted, " insertError:", insertError)
 
-    if (error) {
-      alert("登録に失敗しました: " + error.message)
-      console.error(error)
+    if (insertError) {
+      alert("登録に失敗しました: " + insertError.message)
+      console.error("▶ insertError 詳細:", insertError)
       return
     }
 
+    // 成功したらリストに戻る
     router.push("/items")
   }
 

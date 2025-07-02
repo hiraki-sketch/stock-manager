@@ -1,5 +1,5 @@
 "use client"
-import { supabase } from "@/lib/supabaseClient"
+import { createClient } from "@/lib/supabaseClient"
 import Link from "next/link"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
@@ -11,6 +11,7 @@ export default function Header() {
     const router = useRouter()
 
 const handleLogout = async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     router.push("/login")
 }

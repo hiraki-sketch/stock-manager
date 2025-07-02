@@ -1,5 +1,5 @@
 "use client"
-import { supabase } from "@/lib/supabaseClient" // ✅ Supabaseクライアントを読み込む
+import { createClient } from "@/lib/supabaseClient" // ✅ Supabaseクライアントを読み込む
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleLogin = async () => {
+  const supabase = createClient() // ✅ Supabaseクライアントを作成
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,

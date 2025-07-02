@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import Link from "next/link"
-import { supabase } from "@/lib/supabaseClient" 
+import { createClient } from "@/lib/supabaseClient" 
 
 export default function SignupPage() {
   const [username, setUsername] = useState("")
@@ -11,6 +11,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
 
   const handleSignup = async () => {
+    const supabase = createClient()
    const { error } = await supabase.auth.signUp({
   email,
   password,
