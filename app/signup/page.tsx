@@ -12,13 +12,13 @@ export default function SignupPage() {
 
   const handleSignup = async () => {
     const supabase = createClient()
-   const { error } = await supabase.auth.signUp({
-  email,
-  password,
-  options: {
-  data: { username },
-  },
-})
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { username },
+      },
+    })
 
     if (error) {
       alert("登録失敗: " + error.message)
@@ -29,12 +29,12 @@ export default function SignupPage() {
   }
 
   return (
-      <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 bg-white text-black p-6">
-      <div className="w-full max-w-md bg-white text-black dark:bg-gray-900 dark:text-white shadow-lg rounded-xl p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-center">サインアップ</h1>
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="w-full max-w-md bg-white text-black dark:bg-gray-900 dark:text-white shadow-lg rounded-xl p-6 sm:p-8 space-y-6">
+        <h1 className="text-2xl font-bold text-center mb-4">サインアップ</h1>
 
         <div>
-          <label className="block mb-1 text-sm font-medium">ユーザー名</label>
+          <label className="block mb-1 text-sm font-medium text-black dark:text-white">ユーザー名</label>
           <Input
             type="text"
             placeholder="ひらき"
@@ -44,7 +44,7 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="block mb-1 text-sm font-medium">メールアドレス</label>
+          <label className="block mb-1 text-sm font-medium text-black dark:text-white">メールアドレス</label>
           <Input
             type="email"
             placeholder="you@example.com"
@@ -54,7 +54,7 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="block mb-1 text-sm font-medium">パスワード</label>
+          <label className="block mb-1 text-sm font-medium text-black dark:text-white">パスワード</label>
           <Input
             type="password"
             placeholder="パスワード"

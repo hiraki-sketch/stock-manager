@@ -21,31 +21,31 @@ export default function Home() {
         />
 
         {/* タイトル */}
-        <h1 className="text-5xl font-extrabold font-sans tracking-tight drop-shadow-lg text-center">
+        <h1 className="text-5xl font-extrabold font-sans tracking-tight drop-shadow-lg text-center mb-10">
           STOCK-MANAGER
         </h1>
 
-        {/* ページリンク群（下部） */}
-        <div className="flex flex-wrap justify-center gap-4">
+        {/* ページリンク群 */}
+        <div className="w-full max-w-screen-md flex flex-wrap justify-center gap-4">
           <Link
-           href="/items"
-           className="rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-            >
+            href="/items"
+            className="w-full sm:w-auto text-center rounded-lg border border-transparent px-5 py-3 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          >
             在庫一覧ページへ
           </Link>
-          <Link href="/login" className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full shadow transition">
+          <Link href="/login" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
             ログインページへ
           </Link>
-          <Link href="/signup" className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full shadow transition">
+          <Link href="/signup" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
             サインアップページへ
           </Link>
-          <Link href="/history" className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full shadow transition">
+          <Link href="/history" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
             削除履歴ページへ
           </Link>
-          <Link href="/items/new" className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full shadow transition">
+          <Link href="/items/new" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
             新規商品登録ページへ
           </Link>
-          <Link href="/items/1/edit" className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full shadow transition">
+          <Link href="/items/1/edit" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
             在庫詳細ページへ
           </Link>
         </div>

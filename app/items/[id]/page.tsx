@@ -17,7 +17,6 @@ export default function EditItem() {
   const [day, setDay] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  // データ取得
   useEffect(() => {
     if (!id) {
       setErrorMessage('IDが見つかりません')
@@ -52,7 +51,6 @@ export default function EditItem() {
     fetchItem()
   }, [id])
 
-  // 更新処理
   const handleUpdate = async () => {
     setErrorMessage(null)
 
@@ -98,48 +96,60 @@ export default function EditItem() {
   }
 
   return (
-    <main className="p-8 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">在庫編集</h1>
-      {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
+    <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white px-4 sm:px-6 py-8">
+      <div className="max-w-screen-sm mx-auto">
+        <h1 className="text-2xl font-bold mb-6">在庫編集</h1>
+        {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
 
-      <label className="block mb-1">商品名</label>
-      <input
-        type="text"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        className="w-full border px-3 py-2 rounded mb-4 text-black bg-white"
-      />
+        <div className="space-y-4">
+          <div>
+            <label className="block mb-1 text-black dark:text-white">商品名</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 text-black dark:text-white"
+            />
+          </div>
 
-      <label className="block mb-1">在庫数</label>
-      <input
-        type="number"
-        value={stock}
-        onChange={e => setStock(e.target.value)}
-        className="w-full border px-3 py-2 rounded mb-4 text-black bg-white"
-      />
+          <div>
+            <label className="block mb-1 text-black dark:text-white">在庫数</label>
+            <input
+              type="number"
+              value={stock}
+              onChange={e => setStock(e.target.value)}
+              className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 text-black dark:text-white"
+            />
+          </div>
 
-      <label className="block mb-1">チェック者</label>
-      <input
-        type="text"
-        value={checker}
-        onChange={e => setChecker(e.target.value)}
-        className="w-full border px-3 py-2 rounded mb-4 text-black bg-white"
-      />
+          <div>
+            <label className="block mb-1 text-black dark:text-white">チェック者</label>
+            <input
+              type="text"
+              value={checker}
+              onChange={e => setChecker(e.target.value)}
+              className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 text-black dark:text-white"
+            />
+          </div>
 
-      <label className="block mb-1">チェック日</label>
-      <input
-        type="date"
-        value={day}
-        onChange={e => setDay(e.target.value)}
-        className="w-full border px-3 py-2 rounded mb-6 text-black bg-white"
-      />
+          <div>
+            <label className="block mb-1 text-black dark:text-white">チェック日</label>
+            <input
+              type="date"
+              value={day}
+              onChange={e => setDay(e.target.value)}
+              className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 text-black dark:text-white"
+            />
+          </div>
 
-      <button
-        onClick={handleUpdate}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        更新する
-      </button>
+          <button
+            onClick={handleUpdate}
+            className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+          >
+            更新する
+          </button>
+        </div>
+      </div>
     </main>
   )
 }

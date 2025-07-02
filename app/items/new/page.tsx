@@ -28,7 +28,6 @@ function NewItemForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // ─── STEP0: 認証中ユーザー取得＆IDをログ ───
     const {
       data: { user },
       error: userError,
@@ -40,7 +39,6 @@ function NewItemForm() {
       return
     }
 
-    // ─── STEP1: INSERT実行 ───
     const { data: inserted, error: insertError } = await supabase
       .from("items")
       .insert({
@@ -48,9 +46,9 @@ function NewItemForm() {
         stock: Number(stock),
         unit,
         checker: checkedBy,
-        user_id: user.id,      // ← ここに正しい user.id が入っているか
+        user_id: user.id,
       })
-      .select()               // 挿入後の行を返してもらう
+      .select()
     console.log("▶ INSERT後 inserted:", inserted, " insertError:", insertError)
 
     if (insertError) {
@@ -59,7 +57,6 @@ function NewItemForm() {
       return
     }
 
-    // 成功したらリストに戻る
     router.push("/items")
   }
 
@@ -81,18 +78,20 @@ function NewItemForm() {
         <Label>チェック者</Label>
         <Input value={checkedBy} onChange={(e) => setCheckedBy(e.target.value)} required />
       </div>
-      <Button type="submit">登録</Button>
+      <Button type="submit" className="w-full sm:w-auto">登録</Button>
     </form>
   )
 }
 
 export default function NewItemPage() {
   return (
-    <main className="p-6 space-y-4 max-w-md mx-auto bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen shadow rounded-md">
-      <h1 className="text-xl font-bold">新規商品登録</h1>
-      <Suspense fallback={<p>読み込み中...</p>}>
-        <NewItemForm />
-      </Suspense>
+    <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white flex items-start justify-center py-8 px-4 sm:px-6">
+      <div className="w-full max-w-screen-sm bg-white dark:bg-gray-800 shadow rounded-md p-6">
+        <h1 className="text-xl font-bold mb-4">新規商品登録</h1>
+        <Suspense fallback={<p>読み込み中...</p>}>
+          <NewItemForm />
+        </Suspense>
+      </div>
     </main>
   )
 }
