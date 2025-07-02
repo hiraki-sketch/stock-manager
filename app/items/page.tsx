@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import FilterBar from "./FilterBar";
 import { useDebounce } from "@/utils/useDebounce";
 
-export function ItemsPage() {
+export default function ItemsPage() {
   const [filters, setFilters] = useState({ name: "", checker: "", date: "" });
   const debouncedName = useDebounce(filters.name, 300);
   const debouncedChecker = useDebounce(filters.checker, 300);
@@ -35,41 +35,42 @@ export function ItemsPage() {
 
   // データ取得（サーバー側フィルタリング）
   useEffect(() => {
-  const fetchItems = async () => {
-    const supabase = createClient();
-    let query = supabase
-      .from("items")
-      .select("*")
-      .eq("deleted", false);
+    const fetchItems = async () => {
+      const supabase = createClient();
+      let query = supabase
+        .from("items")
+        .select("*")
+        .eq("deleted", false);
 
-    if (debouncedName.trim().length >= 4) {
-      query = query.ilike("name", `%${debouncedName}%`);
-    }
+      if (debouncedName.trim().length >= 2) {
+        query = query.ilike("name", `%${debouncedName}%`);
+      }
 
-    if (debouncedChecker.trim().length >= 4) {
-      query = query.ilike("checker", `%${debouncedChecker}%`);
-    }
+      if (debouncedChecker.trim().length >= 2) {
+        query = query.ilike("checker", `%${debouncedChecker}%`);
+      }
 
-    if (debouncedDate.trim().length === 7) {
-      const [year, month] = debouncedDate.split("-");
-      const start = `${year}-${month}-01`;
-      const nextMonth = month === "12" ? "01" : String(Number(month) + 1).padStart(2, "0");
-      const nextYear = month === "12" ? String(Number(year) + 1) : year;
-      const end = `${nextYear}-${nextMonth}-01`;
-      query = query.gte("day", start).lt("day", end);
-    }
+      if (debouncedDate.trim().length === 7) {
+        const [year, month] = debouncedDate.split("-");
+        const start = `${year}-${month}-01`;
+        const nextMonth = month === "12" ? "01" : String(Number(month) + 1).padStart(2, "0");
+        const nextYear = month === "12" ? String(Number(year) + 1) : year;
+        const end = `${nextYear}-${nextMonth}-01`;
+        query = query.gte("day", start).lt("day", end);
+      }
 
-    const { data, error } = await query.order("updated_at", { ascending: false });
-    if (error) {
-      setError(error.message);
-    } else {
-      setItems(data || []);
-    }
-    setLoading(false);
-  };
+      const { data, error } = await query.order("updated_at", { ascending: false });
+      if (error) {
+        setError(error.message);
+      } else {
+        setItems(data || []);
+      }
+      setLoading(false);
+    };
 
-  fetchItems();
-}, [debouncedName, debouncedChecker, debouncedDate]);
+    fetchItems();
+  }, [debouncedName, debouncedChecker, debouncedDate]);
+
   if (loading)
     return (
       <main className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900 text-black dark:text-white">
@@ -103,5 +104,3 @@ export function ItemsPage() {
     </main>
   );
 }
-
-export default ItemsPage;
