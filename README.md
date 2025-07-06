@@ -28,7 +28,7 @@
 | その他 | Vercelデプロイ, GitHub管理 |
 
 ## デプロイURL
-
+https://stock-manager-mauve.vercel.app/
 
 ※一部の機能はログイン後に利用可能です。
 
