@@ -1,36 +1,37 @@
-// app/items/FilterBar.tsx
-'use client'
+// File: app/history/FilterBarForHistory.tsx
+"use client"
 
-import { useSearchParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useTransition, useState } from "react"
 import { Input } from "@/components/ui/input"
 
-export default function FilterBar() {
+export default function FilterBarForHistory() {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
   const [name, setName] = useState(searchParams.get("name") || "")
   const [checker, setChecker] = useState(searchParams.get("checker") || "")
   const [date, setDate] = useState(searchParams.get("date") || "")
 
-  useEffect(() => {
-    const params = new URLSearchParams()
+  // クエリを更新する関数（transition付き）
+  function updateQuery(key: string, value: string) {
+    const params = new URLSearchParams(searchParams)
 
-    if (name.trim().length >= 2) {
-      params.set("name", name)
+    if (value) {
+      params.set(key, value)
+    } else {
+      params.delete(key)
     }
 
-    if (checker.trim().length >= 2) {
-      params.set("checker", checker)
-    }
+    const newUrl = `${pathname}?${params.toString()}`
 
-    if (date.length === 7) {
-      params.set("date", date)
-    }
-
-    const query = params.toString()
-    router.push(`/items${query ? `?${query}` : ""}`)
-  }, [name, checker, date, router])
+    
+    startTransition(() => {
+      router.push(newUrl)
+    })
+  }
 
   return (
     <div className="p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg mb-6">
@@ -42,7 +43,11 @@ export default function FilterBar() {
           <Input
             placeholder="商品名を入力"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value)
+              updateQuery("name", e.target.value)
+            }}
+            className="w-full"
           />
         </div>
 
@@ -53,7 +58,11 @@ export default function FilterBar() {
           <Input
             placeholder="チェック者を入力"
             value={checker}
-            onChange={(e) => setChecker(e.target.value)}
+            onChange={(e) => {
+              setChecker(e.target.value)
+              updateQuery("checker", e.target.value)
+            }}
+            className="w-full"
           />
         </div>
 
@@ -64,10 +73,18 @@ export default function FilterBar() {
           <Input
             type="month"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => {
+              setDate(e.target.value)
+              updateQuery("date", e.target.value)
+            }}
+            className="w-full"
           />
         </div>
       </div>
+
+      {isPending && (
+        <p className="text-sm text-gray-400 mt-2">検索中...</p>
+      )}
     </div>
   )
 }

@@ -1,9 +1,10 @@
 "use client"
-import { createClient } from "@/lib/supabaseClient"
+
+import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/browserClient"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -16,35 +17,43 @@ export default function LoginPage() {
       email,
       password,
     })
+
     if (error) {
       alert("ログインに失敗しました: " + error.message)
       return
     }
-    router.push("/items")
+
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (session) {
+      router.push("/items")
+    } else {
+      alert("セッションが確立できませんでした。")
+    }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="w-full max-w-md bg-gray-900 text-white shadow-xl p-6 sm:p-8 rounded-xl space-y-6">
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md bg-gray-900 text-white p-6 rounded-xl">
         <h1 className="text-2xl font-bold text-center mb-4">ログイン</h1>
 
-        <div>
-          <label className="block mb-1 text-sm font-medium text-white">メールアドレス</label>
+        <div className="mb-4">
+          <label className="block mb-1 text-sm">メールアドレス</label>
           <Input
             type="email"
-            placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
           />
         </div>
 
-        <div>
-          <label className="block mb-1 text-sm font-medium text-white">パスワード</label>
+        <div className="mb-4">
+          <label className="block mb-1 text-sm">パスワード</label>
           <Input
             type="password"
-            placeholder="パスワード"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="password"
           />
         </div>
 

@@ -27,9 +27,8 @@ export default function Home() {
 
         {/* ページリンク群 */}
         <div className="w-full max-w-screen-md flex flex-wrap justify-center gap-4">
-          <Link
-            href="/items"
-            className="w-full sm:w-auto text-center rounded-lg border border-transparent px-5 py-3 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          <Link href="/items"
+            className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition"
           >
             在庫一覧ページへ
           </Link>
@@ -45,9 +44,16 @@ export default function Home() {
           <Link href="/items/new" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
             新規商品登録ページへ
           </Link>
-          <Link href="/items/1/edit" className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition">
-            在庫詳細ページへ
-          </Link>
+
+          {/* 在庫詳細ページへのリンクはQRコード遷移機能と連携予定のため、現在は非表示 */}
+          {false && (
+            <Link
+              href="/items/1/edit"
+              className="w-full sm:w-auto text-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-5 rounded-full shadow transition"
+            >
+              在庫詳細ページへ
+            </Link>
+          )}
         </div>
       </main>
     </>

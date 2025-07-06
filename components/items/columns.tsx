@@ -1,7 +1,9 @@
+"use client"
+
 import { ColumnDef } from "@tanstack/react-table"
 import { Item } from "@/types/item"
-import { deleteItemById } from "@/lib/deleteItem"
 import Link from "next/link"
+import { deleteItemById } from "@/lib/deleteItem"
 
 export const columns: ColumnDef<Item>[] = [
   {
@@ -15,7 +17,6 @@ export const columns: ColumnDef<Item>[] = [
   {
     accessorKey: "stock",
     header: "在庫数",
-    cell: ({ row }) => `${row.original.stock} ${row.original.unit}`,
   },
   {
     accessorKey: "checker",
@@ -24,51 +25,24 @@ export const columns: ColumnDef<Item>[] = [
   {
     accessorKey: "day",
     header: "チェック日",
-    cell: ({ row }) =>
-      row.original.day
-        ? new Date(row.original.day).toLocaleDateString("ja-JP")
-        : "-",
-  },
-  {
-    accessorKey: "created_at",
-    header: "登録日時",
-    cell: ({ row }) =>
-      new Date(row.original.created_at).toLocaleString("ja-JP", {
-        year:   "numeric",
-        month:  "2-digit",
-        day:    "2-digit",
-        hour:   "2-digit",
-        minute: "2-digit",
-      }),
+    cell: ({ row }) => {
+      const date = row.original.day
+      return date ? new Date(date).toLocaleDateString("ja-JP") : ""
+    },
   },
   {
     accessorKey: "updated_at",
     header: "更新日時",
-    cell: ({ row }) =>
-      new Date(row.original.updated_at).toLocaleString("ja-JP", {
-        year:   "numeric",
-        month:  "2-digit",
-        day:    "2-digit",
-        hour:   "2-digit",
-        minute: "2-digit",
-      }),
+    cell: ({ row }) => {
+      const updated = row.original.updated_at
+      return updated ? new Date(updated).toLocaleString("ja-JP") : ""
+    },
   },
   {
     id: "actions",
     header: "操作",
     cell: ({ row }) => {
       const item = row.original
-
-      const handleDelete = async () => {
-        if (!confirm(`ID:${item.id} を本当に削除しますか？`)) return
-        try {
-          await deleteItemById(item.id)
-          alert("削除に成功しました")
-          location.reload()
-        } catch {
-          alert("削除に失敗しました")
-        }
-      }
 
       return (
         <div className="flex gap-4">
@@ -78,12 +52,25 @@ export const columns: ColumnDef<Item>[] = [
           >
             編集
           </Link>
-          <button
-            onClick={handleDelete}
-            className="text-red-600 hover:underline"
+
+          <form
+            action={async () => {
+              const confirmed = confirm(`ID:${item.id} を削除しますか？`)
+              if (!confirmed) return
+
+              try {
+                await deleteItemById(item.id)
+                alert("削除に成功しました")
+                location.reload()
+              } catch {
+                alert("削除に失敗しました")
+              }
+            }}
           >
-            削除
-          </button>
+            <button type="submit" className="text-red-600 hover:underline">
+              削除
+            </button>
+          </form>
         </div>
       )
     },

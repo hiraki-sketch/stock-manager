@@ -1,164 +1,85 @@
-'use client'
+// File: app/items/[id]/page.tsx
+import { createClient } from "@/lib/supabase/serverActionClient"
+import { redirect } from "next/navigation"
+import { updateItem } from "./updateItem"
 
-import { useRouter, useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabaseClient'
-import { Item } from '@/types/item'
+export default async function EditItemPage(props: unknown) {
+  const { params } = props as { params: { id: string } }
 
-export default function EditItem() {
-  const { id } = useParams() as { id: string }
-  const router = useRouter()
+  const supabase = await createClient()
 
-  const [item, setItem] = useState<Item | null>(null)
-  const [name, setName] = useState('')
-  const [checker, setChecker] = useState('')
-  const [stock, setStock] = useState('')
-  const [day, setDay] = useState('')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
-  // アイテム取得
-  useEffect(() => {
-    if (!id) {
-      setErrorMessage('IDが見つかりません')
-      return
-    }
+  if (authError || !user) redirect("/login")
 
-    const fetchItem = async () => {
-      const supabase = createClient()
-      const { data: authUser, error: authError } = await supabase.auth.getUser()
-      if (authError || !authUser.user) {
-        setErrorMessage('ログイン情報が取得できません')
-        return
-      }
+  const { data: item, error: fetchError } = await supabase
+    .from("items")
+    .select("*")
+    .eq("id", params.id)
+    .single()
 
-      const { data, error } = await supabase
-        .from('items')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (error) {
-        setErrorMessage(error.message)
-        return
-      }
-
-      setItem(data)
-      setName(data.name)
-      setChecker(data.checker)
-      setStock(String(data.stock))
-      setDay(data.day || '') // null 対策
-    }
-
-    fetchItem()
-  }, [id])
-
-  // 更新処理
-  const handleUpdate = async () => {
-    setErrorMessage(null)
-
-    if (!item || !name || !checker || !stock || !day) {
-      setErrorMessage('すべての項目を入力してください')
-      return
-    }
-
-    const supabase = createClient()
-    const { data: authUser, error: authError } = await supabase.auth.getUser()
-    if (authError || !authUser.user) {
-      setErrorMessage('ログイン情報が取得できません')
-      return
-    }
-
-    const { error } = await supabase
-      .from('items')
-      .update({
-        name,
-        checker,
-        stock: Number(stock),
-        day,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
-      .select('*')
-      .single()
-
-    if (error) {
-      setErrorMessage(error.message)
-      return
-    }
-
-    alert('更新しました')
-    router.push('/items')
+  if (fetchError || !item) {
+    return <p className="p-8 text-red-600">在庫データの取得に失敗しました</p>
   }
 
-  // ロード・エラー処理
-  if (errorMessage && !item) {
-    return <p className="p-8 text-red-600">{errorMessage}</p>
-  }
-
-  if (!item) {
-    return <p className="p-8">読み込み中…</p>
-  }
-
-  // メインUI
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white px-4 sm:px-6 py-8">
       <div className="max-w-screen-sm mx-auto">
         <h1 className="text-2xl font-bold mb-6">在庫編集</h1>
-        {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
 
-        <div className="space-y-4">
-          {/* 商品名 */}
+        <form action={updateItem.bind(null, params.id)} className="space-y-4">
           <div>
-            <label className="block mb-1 text-black dark:text-white">商品名</label>
+            <label className="block mb-1">商品名</label>
             <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              className="w-full border px-3 py-2 rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+              name="name"
+              defaultValue={item.name}
+              className="w-full border px-3 py-2 rounded text-black dark:text-white bg-white dark:bg-gray-800"
+              required
             />
           </div>
 
-          {/* 在庫数 */}
           <div>
-            <label className="block mb-1 text-black dark:text-white">在庫数</label>
+            <label className="block mb-1">在庫数</label>
             <input
               type="number"
-              value={stock}
-              onChange={e => setStock(e.target.value)}
-              className="w-full border px-3 py-2 rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+              name="stock"
+              defaultValue={item.stock}
+              className="w-full border px-3 py-2 rounded text-black dark:text-white bg-white dark:bg-gray-800"
+              required
             />
           </div>
 
-          {/* チェック者 */}
           <div>
-            <label className="block mb-1 text-black dark:text-white">チェック者</label>
+            <label className="block mb-1">チェック者</label>
             <input
-              type="text"
-              value={checker}
-              onChange={e => setChecker(e.target.value)}
-              className="w-full border px-3 py-2 rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+              name="checker"
+              defaultValue={item.checker}
+              className="w-full border px-3 py-2 rounded text-black dark:text-white bg-white dark:bg-gray-800"
+              required
             />
           </div>
 
-          {/* チェック日 */}
           <div>
-            <label className="block mb-1 text-black dark:text-white">チェック日</label>
+            <label className="block mb-1">チェック日</label>
             <input
               type="date"
-              value={day}
-              onChange={e => setDay(e.target.value)}
-              className="w-full border px-3 py-2 rounded bg-white text-black dark:bg-gray-800 dark:text-white"
+              name="day"
+              defaultValue={item.day || ""}
+              className="w-full border px-3 py-2 rounded text-black dark:text-white bg-white dark:bg-gray-800"
+              required
             />
           </div>
 
-          {/* 更新ボタン */}
           <button
-            onClick={handleUpdate}
+            type="submit"
             className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
           >
             更新する
           </button>
-        </div>
+        </form>
       </div>
     </main>
   )
