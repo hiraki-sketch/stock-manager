@@ -1,36 +1,35 @@
 // File: app/history/FilterBarForHistory.tsx
-"use client"
+"use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useTransition, useState } from "react"
-import { Input } from "@/components/ui/input"
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTransition, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function FilterBarForHistory() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-  const [name, setName] = useState(searchParams.get("name") || "")
-  const [checker, setChecker] = useState(searchParams.get("checker") || "")
-  const [date, setDate] = useState(searchParams.get("date") || "")
+  const [name, setName] = useState(searchParams.get("name") || "");
+  const [checker, setChecker] = useState(searchParams.get("checker") || "");
+  const [date, setDate] = useState(searchParams.get("date") || "");
 
   // クエリを更新する関数（transition付き）
   function updateQuery(key: string, value: string) {
-    const params = new URLSearchParams(searchParams)
+    const params = new URLSearchParams(searchParams);
 
     if (value) {
-      params.set(key, value)
+      params.set(key, value);
     } else {
-      params.delete(key)
+      params.delete(key);
     }
 
-    const newUrl = `${pathname}?${params.toString()}`
+    const newUrl = `${pathname}?${params.toString()}`;
 
-    
     startTransition(() => {
-      router.push(newUrl)
-    })
+      router.push(newUrl);
+    });
   }
 
   return (
@@ -44,8 +43,8 @@ export default function FilterBarForHistory() {
             placeholder="商品名を入力"
             value={name}
             onChange={(e) => {
-              setName(e.target.value)
-              updateQuery("name", e.target.value)
+              setName(e.target.value);
+              updateQuery("name", e.target.value);
             }}
             className="w-full"
           />
@@ -59,8 +58,8 @@ export default function FilterBarForHistory() {
             placeholder="チェック者を入力"
             value={checker}
             onChange={(e) => {
-              setChecker(e.target.value)
-              updateQuery("checker", e.target.value)
+              setChecker(e.target.value);
+              updateQuery("checker", e.target.value);
             }}
             className="w-full"
           />
@@ -74,17 +73,15 @@ export default function FilterBarForHistory() {
             type="month"
             value={date}
             onChange={(e) => {
-              setDate(e.target.value)
-              updateQuery("date", e.target.value)
+              setDate(e.target.value);
+              updateQuery("date", e.target.value);
             }}
             className="w-full"
           />
         </div>
       </div>
 
-      {isPending && (
-        <p className="text-sm text-gray-400 mt-2">検索中...</p>
-      )}
+      {isPending && <p className="text-sm text-gray-400 mt-2">検索中...</p>}
     </div>
-  )
+  );
 }

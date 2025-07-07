@@ -1,9 +1,9 @@
-'use server'  
+"use server";
 
 import { createClient } from "./supabase/serverActionClient";
 
 export async function deleteItemById(id: string) {
-  const supabase = await createClient(); 
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("items")

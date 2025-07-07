@@ -1,6 +1,5 @@
 在庫管理アプリ - Stock Manager
 
-
 ## 概要
 
 現場での在庫管理業務を効率化するために開発したWebアプリケーションです。  
@@ -19,13 +18,13 @@
 
 ## 使用技術スタック
 
-| 項目 | 使用技術 |
-|------|---------|
-| フロントエンド | Next.js 15, React, TypeScript |
-| スタイリング | Tailwind CSS |
-| バックエンド | Supabase（認証・DB） |
-| UIコンポーネント | Shadcn UI（DataTableなど） |
-| その他 | Vercelデプロイ, GitHub管理 |
+| 項目             | 使用技術                      |
+| ---------------- | ----------------------------- |
+| フロントエンド   | Next.js 15, React, TypeScript |
+| スタイリング     | Tailwind CSS                  |
+| バックエンド     | Supabase（認証・DB）          |
+| UIコンポーネント | Shadcn UI（DataTableなど）    |
+| その他           | Vercelデプロイ, GitHub管理    |
 
 ## デプロイURL
 https://stock-manager-mauve.vercel.app/

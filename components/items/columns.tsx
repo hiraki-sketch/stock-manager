@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Item } from "@/types/item"
-import Link from "next/link"
-import { deleteItemById } from "@/lib/deleteItem"
+import { ColumnDef } from "@tanstack/react-table";
+import { Item } from "@/types/item";
+import Link from "next/link";
+import { deleteItemById } from "@/lib/deleteItem";
 
 export const columns: ColumnDef<Item>[] = [
   {
@@ -26,23 +26,23 @@ export const columns: ColumnDef<Item>[] = [
     accessorKey: "day",
     header: "チェック日",
     cell: ({ row }) => {
-      const date = row.original.day
-      return date ? new Date(date).toLocaleDateString("ja-JP") : ""
+      const date = row.original.day;
+      return date ? new Date(date).toLocaleDateString("ja-JP") : "";
     },
   },
   {
     accessorKey: "updated_at",
     header: "更新日時",
     cell: ({ row }) => {
-      const updated = row.original.updated_at
-      return updated ? new Date(updated).toLocaleString("ja-JP") : ""
+      const updated = row.original.updated_at;
+      return updated ? new Date(updated).toLocaleString("ja-JP") : "";
     },
   },
   {
     id: "actions",
     header: "操作",
     cell: ({ row }) => {
-      const item = row.original
+      const item = row.original;
 
       return (
         <div className="flex gap-4">
@@ -55,15 +55,15 @@ export const columns: ColumnDef<Item>[] = [
 
           <form
             action={async () => {
-              const confirmed = confirm(`ID:${item.id} を削除しますか？`)
-              if (!confirmed) return
+              const confirmed = confirm(`ID:${item.id} を削除しますか？`);
+              if (!confirmed) return;
 
               try {
-                await deleteItemById(item.id)
-                alert("削除に成功しました")
-                location.reload()
+                await deleteItemById(item.id);
+                alert("削除に成功しました");
+                location.reload();
               } catch {
-                alert("削除に失敗しました")
+                alert("削除に失敗しました");
               }
             }}
           >
@@ -72,7 +72,7 @@ export const columns: ColumnDef<Item>[] = [
             </button>
           </form>
         </div>
-      )
+      );
     },
   },
-]
+];

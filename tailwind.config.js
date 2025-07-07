@@ -1,9 +1,8 @@
+/* eslint-disable import/no-anonymous-default-export */
+/* eslint-disable import/no-anonymous-default-export */
 module.exports = {
   darkMode: ["class"],
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -15,9 +14,10 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-noto-sans-jp)', 'sans-serif'],
+        sans: ["var(--font-noto-sans-jp)", "sans-serif"],
       },
     },
   },
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   plugins: [require("tailwindcss-animate")],
 };
