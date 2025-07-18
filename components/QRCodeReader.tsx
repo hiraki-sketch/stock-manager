@@ -10,25 +10,30 @@ type Props = {
 export default function QRCodeReader({ onScanAction }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraOptions, setCameraOptions] = useState<{ id: string; label: string }[]>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState<string | undefined>();
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
+  // カメラ一覧を取得
+  useEffect(() => {
+    (async () => {
+      const { Html5Qrcode } = await import("html5-qrcode");
+      const cameras = await Html5Qrcode.getCameras();
+      setCameraOptions(cameras);
+      setSelectedCameraId(cameras[0]?.id);
+    })();
+  }, []);
+
   const startScanner = async () => {
-    if (!ref.current || isCameraActive) return;
+    if (!ref.current || isCameraActive || !selectedCameraId) return;
 
     const { Html5Qrcode } = await import("html5-qrcode");
     const html5QrCode = new Html5Qrcode(ref.current.id);
     html5QrCodeRef.current = html5QrCode;
 
     try {
-      const cameras = await Html5Qrcode.getCameras();
-      const backCameras = cameras.filter(cam =>
-        cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")
-      );
-      const cameraId = backCameras[0]?.id || cameras[0]?.id;
-      if (!cameraId) throw new Error("カメラが見つかりません");
-
       await html5QrCode.start(
-        cameraId,
+        selectedCameraId,
         { fps: 10, qrbox: 250 },
         (decodedText: string) => {
           let data: { name: string; stock: number; unit: string; checker: string } | null = null;
@@ -99,6 +104,21 @@ export default function QRCodeReader({ onScanAction }: Props) {
 
   return (
     <div className="flex flex-col items-center space-y-4">
+      <div className="mb-2">
+        <label className="mr-2">カメラ選択:</label>
+        <select
+          value={selectedCameraId}
+          onChange={e => setSelectedCameraId(e.target.value)}
+          disabled={isCameraActive}
+          className="border rounded px-2 py-1"
+        >
+          {cameraOptions.map(cam => (
+            <option key={cam.id} value={cam.id}>
+              {cam.label || `カメラ${cam.id}`}
+            </option>
+          ))}
+        </select>
+      </div>
       <div id="qr-reader" ref={ref} style={{ width: 300, height: 300 }} />
       <button
         onClick={isCameraActive ? stopScanner : startScanner}
