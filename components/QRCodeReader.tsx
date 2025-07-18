@@ -1,0 +1,111 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Html5Qrcode } from "html5-qrcode";
+
+type Props = {
+  onScanAction: (data: { name: string; stock: number; unit: string; checker: string }) => void;
+};
+
+export default function QRCodeReader({ onScanAction }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+
+  const startScanner = async () => {
+    if (!ref.current || isCameraActive) return;
+
+    const { Html5Qrcode } = await import("html5-qrcode");
+    const html5QrCode = new Html5Qrcode(ref.current.id);
+    html5QrCodeRef.current = html5QrCode;
+
+    try {
+      const cameras = await Html5Qrcode.getCameras();
+      const backCameras = cameras.filter(cam =>
+        cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")
+      );
+      const cameraId = backCameras[0]?.id || cameras[0]?.id;
+      if (!cameraId) throw new Error("カメラが見つかりません");
+
+      await html5QrCode.start(
+        cameraId,
+        { fps: 10, qrbox: 250 },
+        (decodedText: string) => {
+          let data: { name: string; stock: number; unit: string; checker: string } | null = null;
+
+          try {
+            const parsed = JSON.parse(decodedText);
+            if (
+              typeof parsed.name === "string" &&
+              typeof parsed.stock === "number" &&
+              typeof parsed.unit === "string" &&
+              typeof parsed.checker === "string"
+            ) {
+              data = parsed;
+            }
+          } catch {
+            const parts = decodedText.split(",");
+            if (parts.length === 4) {
+              data = {
+                name: parts[0],
+                stock: Number(parts[1]),
+                unit: parts[2],
+                checker: parts[3],
+              };
+            } else if (/^\d{8,}$/.test(decodedText)) {
+              data = {
+                name: decodedText,
+                stock: 1,
+                unit: "個",
+                checker: "",
+              };
+            }
+          }
+
+          if (data) {
+            onScanAction(data);
+            stopScanner(); // 自動停止（必要なければコメントアウト）
+          }
+        },
+        () => {
+          // 読み取り失敗時は無視
+        }
+      );
+
+      setIsCameraActive(true);
+    } catch (err) {
+      console.error("カメラ起動エラー:", err);
+      alert("カメラの使用が許可されていないか、起動に失敗しました。設定を確認してください。");
+    }
+  };
+
+  const stopScanner = async () => {
+    if (html5QrCodeRef.current) {
+      try {
+        await html5QrCodeRef.current.stop();
+        await html5QrCodeRef.current.clear();
+      } catch (err) {
+        console.warn("カメラ停止失敗:", err);
+      }
+    }
+    setIsCameraActive(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      stopScanner();
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center space-y-4">
+      <div id="qr-reader" ref={ref} style={{ width: 300, height: 300 }} />
+      <button
+        onClick={isCameraActive ? stopScanner : startScanner}
+        className={`px-4 py-2 rounded text-white ${isCameraActive ? "bg-red-500 hover:bg-red-600" : "bg-green-600 hover:bg-green-700"}`}
+      >
+        {isCameraActive ? "カメラ停止" : "カメラ起動"}
+      </button>
+    </div>
+  );
+}
