@@ -14,6 +14,9 @@ export default function QRCodeReader({ onScanAction }: Props) {
   const [selectedCameraId, setSelectedCameraId] = useState<string | undefined>();
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
+  // モバイル判定
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
   // カメラ一覧を取得
   useEffect(() => {
     (async () => {
@@ -36,6 +39,12 @@ export default function QRCodeReader({ onScanAction }: Props) {
         selectedCameraId,
         { fps: 10, qrbox: 250 },
         (decodedText: string) => {
+          // スマホ版でのみデバッグ情報を表示
+          if (isMobile) {
+            console.log("読み取り内容:", decodedText);
+            alert("読み取り内容: " + decodedText);
+          }
+
           let data: { name: string; stock: number; unit: string; checker: string } | null = null;
 
           try {
