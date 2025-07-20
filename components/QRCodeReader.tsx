@@ -52,6 +52,15 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
     };
 
     getCameras();
+    // クリーンアップでカメラ停止
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+        scannerRef.current = null;
+      }
+      setIsScanning(false);
+      setIsCameraOn(false);
+    };
   }, [isMobile]);
 
   // QRコード読み取り処理
@@ -166,15 +175,6 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
       startScan();
     }
   };
-
-  // コンポーネントアンマウント時にクリーンアップ
-  useEffect(() => {
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear();
-      }
-    };
-  }, []);
 
   if (!isMobile) {
     return (
