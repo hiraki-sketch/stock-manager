@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 
 interface QRCodeReaderProps {
@@ -23,49 +23,33 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
   // デバイス判定
   const isMobile = typeof window !== "undefined" && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  // カメラ一覧を取得
-  useEffect(() => {
-    const getCameras = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(device => device.kind === "videoinput");
-        setCameras(videoDevices);
-        
-        // 背面カメラを優先選択
-        const backCamera = videoDevices.find(device => 
-          device.label.toLowerCase().includes("back") || 
-          device.label.toLowerCase().includes("rear") ||
-          device.label.toLowerCase().includes("環境")
-        );
-        
-        if (backCamera) {
-          setSelectedCamera(backCamera.deviceId);
-        } else if (videoDevices.length > 0) {
-          setSelectedCamera(videoDevices[0].deviceId);
-        }
-      } catch (error) {
-        console.error("カメラ取得エラー:", error);
-        if (isMobile) {
-          alert("カメラの取得に失敗しました。カメラの許可を確認してください。");
-        }
+  // カメラ一覧取得（モーダルを開いたときに呼ぶ）
+  const fetchCameras = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === "videoinput");
+      setCameras(videoDevices);
+      // 背面カメラを優先選択
+      const backCamera = videoDevices.find(device =>
+        device.label.toLowerCase().includes("back") ||
+        device.label.toLowerCase().includes("rear") ||
+        device.label.toLowerCase().includes("環境")
+      );
+      if (backCamera) {
+        setSelectedCamera(backCamera.deviceId);
+      } else if (videoDevices.length > 0) {
+        setSelectedCamera(videoDevices[0].deviceId);
       }
-    };
-
-    getCameras();
-    // クリーンアップでカメラ停止
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear();
-        scannerRef.current = null;
+    } catch (error) {
+      console.error("カメラ取得エラー:", error);
+      if (isMobile) {
+        alert("カメラの取得に失敗しました。カメラの許可を確認してください。");
       }
-      setIsScanning(false);
-      setIsCameraOn(false);
-    };
-  }, [isMobile]);
+    }
+  };
 
   // QRコード読み取り処理
   const parseQRData = (decodedText: string): ScanResult => {
-    // JSON形式の場合
     try {
       const jsonData = JSON.parse(decodedText);
       if (jsonData.name && jsonData.barcode) {
@@ -74,11 +58,7 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
           barcode: jsonData.barcode
         };
       }
-    } catch {
-      // JSONでない場合は次へ
-    }
-
-    // カンマ区切りの場合
+    } catch {}
     if (decodedText.includes(",")) {
       const parts = decodedText.split(",");
       if (parts.length >= 2) {
@@ -88,16 +68,12 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
         };
       }
     }
-
-    // 数値のみの場合（バーコード）
     if (/^\d+$/.test(decodedText)) {
       return {
         name: `商品_${decodedText}`,
         barcode: decodedText
       };
     }
-
-    // その他の場合
     return {
       name: decodedText,
       barcode: decodedText
@@ -107,7 +83,6 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
   // スキャン開始
   const startScan = () => {
     if (!selectedCamera || !containerRef.current) return;
-
     try {
       scannerRef.current = new Html5QrcodeScanner(
         "qr-reader",
@@ -119,25 +94,19 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
         },
         false
       );
-
       scannerRef.current.render(
         (decodedText) => {
-          // スキャン成功時の処理
           const scanResult = parseQRData(decodedText);
-          
           if (isMobile) {
             alert(`読み取り成功: ${scanResult.name}`);
           }
-          
           onScanAction(scanResult);
           stopScan();
         },
         (error) => {
-          // エラーは無視（継続スキャン）
           console.log("スキャンエラー:", error);
         }
       );
-
       setIsScanning(true);
       setIsCameraOn(true);
     } catch (error) {
@@ -176,6 +145,17 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
     }
   };
 
+  // アンマウント時のクリーンアップのみuseEffectで
+  // (モーダル閉じたときやページ遷移時)
+  useEffect(() => {
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+        scannerRef.current = null;
+      }
+    };
+  }, []);
+
   if (!isMobile) {
     return (
       <div className="p-4 text-center">
@@ -186,6 +166,14 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
 
   return (
     <div className="space-y-4">
+      {/* カメラ一覧取得ボタン */}
+      <button
+        type="button"
+        className="mb-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        onClick={fetchCameras}
+      >
+        カメラ一覧を取得
+      </button>
       {/* カメラ選択 */}
       <div className="flex flex-col space-y-2">
         <label className="text-sm font-medium text-gray-700">
@@ -204,7 +192,6 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
           ))}
         </select>
       </div>
-
       {/* カメラON/OFFボタン */}
       <button
         onClick={toggleCamera}
@@ -216,11 +203,9 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
       >
         {isCameraOn ? "カメラOFF" : "カメラON"}
       </button>
-
       {/* QRコード読み取りエリア */}
       <div ref={containerRef} className="relative">
         <div id="qr-reader" className="w-full"></div>
-        
         {/* スキャンガイド */}
         {isScanning && (
           <div className="absolute inset-0 pointer-events-none">
@@ -232,11 +217,11 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
           </div>
         )}
       </div>
-
       {/* 使用方法 */}
       <div className="bg-gray-50 p-4 rounded-md">
         <h3 className="font-medium text-gray-900 mb-2">使用方法:</h3>
         <ul className="text-sm text-gray-600 space-y-1">
+          <li>• 「カメラ一覧を取得」ボタンでカメラを取得</li>
           <li>• カメラを選択して「カメラON」を押してください</li>
           <li>• QRコードまたはバーコードを枠内に配置してください</li>
           <li>• 自動で読み取られ、商品情報が入力されます</li>
