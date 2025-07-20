@@ -15,12 +15,12 @@ export default function NewItemPage() {
   // モバイル判定
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
-  const handleScan = (data: { name: string; stock: number; unit: string; checker: string }) => {
+  const handleScan = (data: { name: string; barcode: string }) => {
     setForm({
       name: data.name,
-      stock: String(data.stock),
-      unit: data.unit,
-      checker: data.checker,
+      stock: "1",
+      unit: "個",
+      checker: "",
     });
   };
 
