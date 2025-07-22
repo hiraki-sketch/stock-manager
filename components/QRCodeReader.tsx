@@ -24,9 +24,15 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
 
   // カメラ一覧取得
   const fetchCameras = async () => {
+    console.log('fetchCameras called');
+    try {
+    await navigator.mediaDevices.getUserMedia({ video: true });
+
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
+    console.log('videoDevices:', videoDevices);
     setCameras(videoDevices);
+
     const backCamera = videoDevices.find(device =>
       device.label.toLowerCase().includes('back') ||
       device.label.toLowerCase().includes('rear') ||
@@ -34,8 +40,11 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
     );
     if (backCamera) setSelectedCamera(backCamera.deviceId);
     else if (videoDevices.length > 0) setSelectedCamera(videoDevices[0].deviceId);
+  } catch (error) {
+    console.error('カメラ取得エラー:', error);
+    alert('カメラの取得中にエラーが発生しました');
+  }
   };
-
   // QRコード読み取り処理
   const parseQRData = (decodedText: string): ScanResult => {
     try {
@@ -70,6 +79,7 @@ export default function QRCodeReader({ onScanAction }: QRCodeReaderProps) {
 
   // カメラON
   const startCamera = async () => {
+    console.log('startCamera called', selectedCamera, qrRef.current);
     if (!selectedCamera || !qrRef.current) return;
     if (html5QrCodeRef.current) {
       try {
