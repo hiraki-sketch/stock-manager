@@ -4,15 +4,16 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/serverActionClient";
 
 export async function registerItem(formData: FormData) {
-  const supabase = await createClient(); // ✅ ここを修正
+  const supabase = await createClient();
 
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
+  // ✅ ここだけでOK：ログインしてなければ /login に遷移
   if (authError || !user) {
-    throw new Error("認証情報が無効です");
+    redirect("/login");
   }
 
   const name = formData.get("name") as string;

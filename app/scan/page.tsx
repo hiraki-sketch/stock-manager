@@ -3,14 +3,33 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Html5Qrcode } from "html5-qrcode";
+import { createClient } from "@/lib/supabase/browserClient";
 
 export default function ScanPage() {
   const qrRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [isScanning, setIsScanning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // ログイン状態をチェック
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (error || !user) {
+        router.push("/login");
+        return;
+      }
+      
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
-    if (!qrRef.current) return;
+    if (!qrRef.current || isLoading) return;
 
     const html5QrCode = new Html5Qrcode("reader");
     setIsScanning(true);
@@ -51,7 +70,19 @@ export default function ScanPage() {
       setIsScanning(false);
       html5QrCode.stop().catch(console.error);
     };
-  }, [router]);
+  }, [router, isLoading]);
+
+  // ローディング中は何も表示しない
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2">読み込み中...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
