@@ -16,22 +16,19 @@ export default function NewItemPage() {
     checker: "",
   });
 
-  // モバイル判定
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-  // モーダルの開閉状態
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const [showQRModal, setShowQRModal] = useState(false);
 
-  // ログイン状態をチェック
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createClient();
       const { data: { user }, error } = await supabase.auth.getUser();
-      
+
       if (error || !user) {
         router.push("/login");
         return;
       }
-      
+
       setIsLoading(false);
     };
 
@@ -45,10 +42,9 @@ export default function NewItemPage() {
       unit: "個",
       checker: "",
     });
-    setShowQRModal(false); // スキャン後にモーダルを閉じる
+    setShowQRModal(false);
   };
 
-  // ローディング中は何も表示しない
   if (isLoading) {
     return (
       <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white flex items-center justify-center">
@@ -64,7 +60,7 @@ export default function NewItemPage() {
     <main className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white flex items-start justify-center py-8 px-4 sm:px-6">
       <div className="w-full max-w-screen-sm bg-white dark:bg-gray-800 shadow rounded-md p-6">
         <h1 className="text-2xl font-bold mb-6 text-center sm:text-left">新規商品登録</h1>
-        {/* モバイル版でのみQRコードリーダーモーダルを表示 */}
+
         {isMobile && (
           <div className="mb-6 flex justify-center">
             <button
@@ -74,7 +70,7 @@ export default function NewItemPage() {
             >
               QRコードで自動入力
             </button>
-            {/* モーダル */}
+
             {showQRModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 relative w-full max-w-xs mx-auto">
@@ -91,11 +87,13 @@ export default function NewItemPage() {
             )}
           </div>
         )}
+
         {!isMobile && (
           <div className="mb-6 text-center p-4 bg-White-100 rounded">
             <p>QRコード読み取りはモバイル端末でご利用ください。</p>
           </div>
         )}
+
         <form action={registerItem} className="space-y-4">
           <div>
             <label className="block mb-1 text-sm font-medium">商品名</label>

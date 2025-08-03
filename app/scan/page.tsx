@@ -10,7 +10,6 @@ export default function ScanPage() {
   const router = useRouter();
   const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
   // ログイン状態をチェック
   useEffect(() => {
     const checkAuth = async () => {
